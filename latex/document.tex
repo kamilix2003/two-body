@@ -1,4 +1,4 @@
-\documentclass[english,12pt,a4paper]{report}
+\documentclass[english,12pt,a4paper, notitlepage]{report}
 \usepackage[T1]{fontenc}
 \usepackage{babel}
 \usepackage{geometry}
@@ -20,6 +20,7 @@
 	pdfpagemode=FullScreen,
 }
 \usepackage{amsmath}
+\usepackage{multirow}
 \usepackage{pgfplots}
 \usepackage{xcolor}
 \usepackage{listings}
@@ -39,6 +40,9 @@
 
 \lstset{style=mystyle}
 
+\usepackage{caption}
+\usepackage{subcaption}
+
 
 % Computation of Trajectory in Two-Body Problem
 % Numerical Solution of Two-Body Problem
@@ -53,43 +57,55 @@
 \begin{document}
 	\begin{titlepage}
 		\noindent
-		Supervised by: Przemysław Korohoda, Dr. Eng \\
-		Date of submission: DD/MM/YYYY
+		Course subject: Computational Techniques (2023/2024) \\
+		Study course: Electronics and Telecommunications (first level) \\
+		University: AGH University of Science and Technology, Kraków, Poland \\
+				
 		\begin{center}
+			\vspace{0.2cm}	
+			\begin{tabular}{|c|c|}
+				\hline
+				\multicolumn{2}{|c|}{Topic: Numerical Methods for Solving Ordinary Differential Equations in Two-Body Problem}  \\
+				\hline
+				\multirow{2}{9em}{Author: \\ Kamil Chaj}& Date of submission: 10/01/2024 \\
+				
+				& Supervised by: Przemysław Korohoda, Dr. Eng \\
+				\hline
+			\end{tabular}
 
 			\vspace*{-1cm}
+%
+%			\vfill
+%			
+%			\textbf{Numerical Methods for Solving Ordinary Differential Equations in Two-Body Problem}
+%						
+%			\vspace{0.5cm}
+%			
+%			\textit{Computation Techniques Final Project}
+%			
+%			\vspace{1.5cm}
+%			
+%			Kamil Chaj
+%			
+%			\vspace{1.5cm}
 
 			\vfill
 			
-			\textbf{Numerical Methods for Solving Differential Equations in Two-Body Problem}
+			\begin{abstract}
+				Two-body problem discuss predicting orbit of two bodies viewed as point masses. The problem assumes that the two objects interact only with one another, and all other bodies are ignored. Goal of this project is to implement and test different methods of numerically solving ordinary differential equations in case of two-body problem. Methods we are going to implement and compare are  Euler method, Runge-Kutta method and Adaptive Runge-Kutta method. 
+				Methods utilizing multiple evaluations in single iteration like Runge-Kutta method give more accurate results in smaller amount of time than simpler methods like Euler method.
+			\end{abstract}
 						
-			\vspace{0.5cm}
-			
-			\textit{Computation Techniques Final Project}
-			
-			\vspace{1.5cm}
-			
-			Kamil Chaj
-			
-			\vspace{1.5cm}
-			
-%			Supervised by: Przemysław Korohoda, Dr. Eng \\
-%			Date of submission: DD/MM/YYYY
-			
 			\vfill
 									
-			Computational Techniques \\
-			Electronics and Telecommunications \\
-			AGH University of Science and Technology, Kraków, Poland\\
-			2023/2024
+%			Computational Techniques \\
+%			Electronics and Telecommunications \\
+%			AGH University of Science and Technology, Kraków, Poland\\
+%			2023/2024
 			
 		\end{center}
 	\end{titlepage}
-	\begin{abstract}
-		Two-body problem discuss predicting orbit of two bodies viewed as point masses. The problem assumes that the two objects interact only with one another, and all other bodies are ignored. Goal of this project is to implement and test different methods of numerically solving ordinary differential equations in case of two-body problem. Methods we are going to implement and compare are matrix system of first order differential equations, Euler method, Runge-Kutta method and build-in ODE solvers in MATLAB. 
-		
-		(brief summery of results ...)
-	\end{abstract}
+
 		\tableofcontents
 	\chapter{Two Body Problem}
 	\section{Assumptions}
@@ -205,6 +221,8 @@
 		, \qquad t_0 = 0
 	\end{equation}
 	
+	implementation in appendix \ref{code:2}
+	
 	\subsection{Earth-Moon system}
 	
 	First we need to assign values for all parameters in our equations.
@@ -261,18 +279,25 @@
 		\end{bmatrix}
 	\end{equation}
 	
-	\subsection{Equal masses system}
+	\subsection{Projectile motion system}
 	
-	Gravitation constant $G$ stays the same as in previous case (\ref{eq:G}). Both masses are equal and for this example we will use 2 Marses.
+	For this case we will look at two-body problem in micro scale, we will verify if assumption that for small distances from surface of the earth gravitational field is uniform.
 	
-	$$ m_1 = m_2 = 0.641 \cdot 10^{24} kg $$
+	\noindent Gravitation constant $G$ stays the same as in previous case (\ref{eq:G}). 
 	
-	Because it is purely hypothetical example we can set any initial values. 
+	Earth
+	$$ m_1 = 5.97 \cdot 10^{24} kg $$
 	
+	
+	small body
+	
+	$$ m_2 = 1 kg$$
+		
 	$$
-	v_{1} = 1 \cdot 10^3 \frac{m}{s}
-	, \qquad v_{2} = 1 \cdot 10^3 \frac{m}{s}
-	, \qquad r_0 = 1 \cdot 10^{8} m
+	v_{1} = 0 \frac{m}{s}
+	, \qquad v_{2} = 5 \frac{m}{s}
+	, \qquad R = 6371 km
+	, \qquad  r = 10 m
 	$$
 		
 	\begin{equation}
@@ -302,50 +327,10 @@
 		\end{bmatrix}
 		=
 		\begin{bmatrix}
-			0 & v_1 & 0\\
+			0 & 0 & 0\\
 			0 & v_2 & 0\\
 			0 & 0 & 0\\
-			r_0 & 0 & 0\\
-		\end{bmatrix}
-	\end{equation}
-	
-	\subsection{Arbitrary system}
-	
-	\alert{IDK TBD}
-	
-	For this system we will start with general equation for two-body problem (\ref{gen_tb}) and specify Force with different expression which is linear.
-	Force is proportional to distance between bodies
-	
-	\begin{equation}\label{gen_tb}
-		\begin{cases}
-			\frac{d^2\vec{r_1}}{dt^2} = \frac{\vec{r_2}-\vec{r_1}}{m_1} \\
-			\frac{d^2\vec{r_2}}{dt^2} = \frac{\vec{r_2}+\vec{r_1}}{m_2} \\
-		\end{cases}
-	\end{equation}
-	
-		$$ m_1 = 10 kg$$
-		
-		$$ m_2 = 10 kg $$
-	
-	$$
-	v_1 = 1 \frac{m}{s}
-	, \qquad v_2 = 1 \frac{m}{s}
-	, \qquad r_0 = 10 m
-	$$
-	
-	\begin{equation}
-		\begin{bmatrix}
-			\vec{v_1}(0)\\
-			\vec{v_2}(0)\\
-			\vec{r_1}(0)\\
-			\vec{r_2}(0)\\
-		\end{bmatrix}
-		=
-		\begin{bmatrix}
-			0 & v_1 & 0\\
-			0 & -v_2 & 0\\
-			-0.5r_0 & 0 & 0\\
-			0.5r_0 & 0 & 0\\
+			R + r & 0 & 0\\
 		\end{bmatrix}
 	\end{equation}
 	
@@ -375,12 +360,7 @@
 	\begin{equation}
 		\frac{\Delta \vec{v_{n+1}} - \Delta \vec{v_n}}{\Delta t} = \text{Truncation error}
 	\end{equation}
-	
-	\section{Linear example}
-	\alert{IDK TBD}
-	
-	Linear differential equations can be solved using method of undetermined coefficients
-	
+		
 	\section{Euler method}
 	This is the simplest method for solving differential equations, where next value is sum of current value and change evaluated at the beginning of $\Delta t$ 
 		
@@ -405,11 +385,13 @@
 		\end{bmatrix}
 	\end{equation}
 	
+	implementation in appendix \ref{code:3}
+	
 	\section{4th order Runge-Kutta method}
 	
 	Runge-Kutta method is similar to Euler method but instead of evaluating change of a function once per iteration, in case of 4th order method, it evaluates function 4 times per iteration, and takes weighted average of these evaluations.
 	
-	\begin{equation}
+	\begin{equation}\label{eq:RK4}
 		\begin{split}
 			k_1 &= f(\vec{r_n},  t_0 + n \Delta t)\\
 			k_2 &= f\left(\vec{r_n} + k_1 \frac{\Delta t}{2}, t_0 + \Delta t(n + \frac{1}{2})\right)\\
@@ -438,6 +420,8 @@
 		\end{bmatrix}
 	\end{equation}
 	
+	implementation in appendix \ref{code:4}
+	
 	\section{Adaptive Runge-Kutta method}
 	
 	In adaptive Runge-Kutta method after each iteration program check if truncation does not exceed set limit, and if it does, evaluation is rejected and the same evaluation is made again with new time step calculated based on maximal and current error until truncation is within set error limit.
@@ -448,40 +432,209 @@
 	\end{equation}
 	$\Delta \tau$ - new time step, $e$ - truncation error, $\varepsilon$ - tolerance
 	
-	\section{Matlab ODE45 solver}
+	implementation in appendix \ref{code:5}
 	
 	\chapter{Results}
 	
-	\section{COOL PLOTS}
+	\section{Trajectory plots}
+	\graphicspath{ {./pictures/} }
 	
-	\section{Accumulation error}
+	These are Trajectories of Earth-Moon system calculated using methods described in previous chapter. For all calculation we used the same initial conditions, and the same step size for methods with constant time step.
+	
+	\emph{note scale in Z axis is 100m}
+	\begin{figure}[h!]
+		\centering
+		\begin{subfigure}[b]{0.4\textwidth}
+			\includegraphics[height=0.3\textheight]{trj_euler.png}
+			\caption{Trajectory calculated using Euler method}
+		\end{subfigure}
+		\hfill
+		\begin{subfigure}[b]{0.4\textwidth}
+			\includegraphics[height=0.3\textheight]{trj_RK4.png}
+			\caption{Trajectory calculated using 4th Order Runge-Kutta method}
+		\end{subfigure}
+		\caption{Fixed step size}
+	\end{figure}
+	
+	First thing we can notice is that plots differ, but they should not. Difference of solutions comes from differences in the way these method approximates, Euler method evaluates change only once per iteration where Runge-Kutta method evaluated 4 times(in case of 4th order method), at first idea comes to mind to decrease time step for Euler method by 4 times but, it is clear simply decreasing time step is not the best idea (fig. \ref{fig:euler_4}). Advantage of Runge-Kutta method over Euler method comes from using evaluations calculated during one iteration and plugging the in again to the formula to achieve even more accurate evaluation (eq: \ref{eq:RK4}) 
+	
+	\begin{figure}[h!]
+		\centering
+		\includegraphics[height=0.3\textheight]{new_trj_euler.png}
+		\caption{Trajectory calculated using Euler method with decrease time step}
+		\label{fig:euler_4}
+	\end{figure}
+	
+%	Now looking at solutions calculated with method with adaptive step size we see another issue with ODE solvers in general, accumulation of error over time. In figure \ref{sub:a} we have solution calculated for around 3 periods of the Moon around Earth, and on the figure \ref{sub:b} we increased time by 1.5 periods and 
+	
+%	\begin{figure}[h!]
+%		\centering
+%		\begin{subfigure}[b]{0.4\textwidth}
+%			\includegraphics[height=0.3\textheight]{trj_ARK4.png}
+%			\caption{Original calculation time span}
+%			\label{sub:a}
+%		\end{subfigure}
+%		\hfill
+%		\begin{subfigure}[b]{0.4\textwidth}
+%			\includegraphics[height=0.3\textheight]{broken_trj_ARK4.png}
+%			\caption{Extended calculation time span}
+%			\label{sub:b}
+%		\end{subfigure}
+%		\caption{ 4th Order Runge-Kutta method with adaptive time step}
+%	\end{figure}
+		
+		
+	\newpage
+	\section{Convergence analysis}
+	
+	To check convergence and error of solution depending on used step size or tolerance we need to first expand discrete solution into continuous one with use of interpolation.
+	Interpolated solutions can be then compared. To compare two function we can use cosine similarity, and angular distance.
+	
+	\begin{equation}
+		S_C(R_{n-1}, R_{n}) = \cos(\theta) = \dfrac{\langle \vec{R_{n-1}}, \vec{R_{n}} \rangle}{R_{n-1} R_{n}}
+	\end{equation}
+	
+	\begin{equation}
+		D_\theta (R_{n-1}, R_{n}) = \arccos(S_C(R_{n-1}, R_{n})) = \theta
+	\end{equation}
+	
+	Comparing plots for Euler and Runge-Kutta method we can clearly see advantage of Runge-Kutta, which converges for bigger time step and a lot quicker in comparison to Euler method, range in which solution converges partially to real solution is very narrow. 
+	
+		\begin{figure}[h!]
+			\centering
+			\includegraphics[width = 0.9\textwidth]{euler_err.png}
+			\caption{Change of solution depending on time step Euler method}
+		\end{figure}
+		
+		\begin{figure}[h!]
+			\centering
+			\includegraphics[width = 0.9\textwidth]{RK4_err.png}
+			\caption{Change of solution depending on time step 4th order Runge-Kutta method}
+		\end{figure}
+		
+		
+	\emph{Bigger plots in appendix \ref{ap:plots}}
+	
+	
+	
+	\newpage
 	
 	\section{Computation time}
 	
+	To measure computation time and therefore computational complexity we will simply run the calculation for wide range of time steps or tolerances and measure time it took to calculate each trajectory.
+	
+	It is easy to predict that Euler method will finish computation quicker than Runge-Kutta but when we take into consideration accuracy of the solution, then we can see that we get accurate solution with Runge-Kutta method.  
+	
+	\begin{figure}[h!]
+		\centering
+		\includegraphics[width = 0.9\textwidth]{time_comp.png}
+		\caption{Comparison of computation time between methods}
+	\end{figure}
+	
+	From plots in previous section we can assume that for Euler method solution is real when step size is at most magnitude of $10^2$ and for Runge-Kutta method $10^5$, and when we compare computation times for those time step we can clearly see advantage of Runge-Kutta method. 
+	
+	\newpage
+	
 	\section{Conclusions}
+	
+	Concluding these test it is clear that using more sophisticated methods for solving differential equations is the better solution than simply using more computational power, by adding few extra steps in numerically solving differential equation we improved greatly accuracy and performance of the method.
+	
+	In context of entire project I realized necessity to organize, plan and structure my work before starting, because in small project like this I managed to finish with something that I am satisfied, but I can imagine myself being stuck on one problem or feature and run out of time for the rest of the project.
+	
+	During the project I also extended my abilities to code more efficiently and clearly in MATLAB and better understand MATLAB syntax of matrices, but there is still a lot of room for improvement, because I found myself very often coping and rewriting the same code which is not very good practice.
+	
 	
 	
 	\appendix
+	\chapter{Extra plots}\label{ap:plots}
+	\begin{center}
+		\includegraphics[width=0.45\textwidth]{coolplot1.png} \\
+		\includegraphics[width=0.45\textwidth]{coolplot2.png} \\
+		\includegraphics[width=0.45\textwidth]{coolplot3.png}
+	\end{center}
+	
+	
+	\newpage
+	
+	\includegraphics[angle=90, height=\textheight]{euler_err.png}
+	\includegraphics[angle=90, height=\textheight]{RK4_err.png}
+	
 	\chapter{Sources}
 	\begin{enumerate}
+		\item \href{https://openai.com/chatgpt}{GPT 3.5 - Open AI}
 		\item \href{https://nssdc.gsfc.nasa.gov/planetary/planetfact.html}{Planetary Fact Sheets - NASA}
 		\item \href{https://www.youtube.com/playlist?list=PLkZjai-2Jcxn35XnijUtqqEg0Wi5Sn8ab}{Numerical Methods for Engineers - Jeffrey Chasnov}
 		\item \href{https://www.youtube.com/playlist?list=PLOIRBaljOV8hBJS4m6brpmUrncqkyXBjB}{Fundamentals of Orbital Mechanics - Alfonso Gonzalez}
 		\item Wikipedia
 		\begin{enumerate}
 			\item \href{https://en.wikipedia.org/wiki/Two-body_problem}{Two-body problem}
+			\item \href{https://en.wikipedia.org/wiki/Euclidean_vector#Dot_product}{Euclidean vector}
 			\item \href{https://en.wikipedia.org/wiki/Newton%27s_law_of_universal_gravitation}{Newton's law of universal gravitation}
 			\item \href{https://en.wikipedia.org/wiki/Runge%E2%80%93Kutta_methods}{Runge-Kutta methods}
 			\item \href{https://en.wikipedia.org/wiki/Truncation_error_(numerical_integration)}{Truncation error}
+			\item \href{https://en.wikipedia.org/wiki/Cosine_similarity}{Cosine similarity}
 		\end{enumerate}
 		\item Fundamentals of Physics Extended 10th edition - Halliday \& Resnick
 	\end{enumerate}
-	\chapter{Code}
-	Only core functions listed, all code is available on \href{https://github.com/kamilix2003/two-body}{Github repository}
 	
-	\lstinputlisting[language=matlab, caption={base\_ode.m}]{../matlab/base_ode.m}
-	\lstinputlisting[language=matlab, caption={euler.m}]{../matlab/euler.m}
-	\lstinputlisting[language=matlab, caption={RK4.m}]{../matlab/RK4.m}
-	\lstinputlisting[language=matlab, caption={Adaptive\_RK.m}]{../matlab/Adaptive_RK.m}
+	\chapter{Used Matlab functions}
+		\section{basic functions}
+			\begin{itemize}
+				\setlength\itemsep{0.1px}
+				\item axis
+				\item clc 
+				\item clear
+				\item close
+				\item disp 
+				\item end 
+				\item eps 
+				\item figure
+				\item grid 
+				\item hold 
+				\item length 
+				\item linspace
+				\item loglog
+				\item logspace
+				\item plot
+				\item plot3
+				\item semilogx 
+				\item size 
+				\item subplot
+				\item tic/toc 
+				\item title
+				\item xlabel
+				\item ylabel
+				\item zeros
+			\end{itemize}
+		
+		\section{particular functions}
+			\begin{itemize}
+				\setlength\itemsep{0.1px}
+				\item abs - absolute value
+				\item drawnow - draws figure from buffer
+				\item diff - numerical differentiation
+				\item dot - dot/inner product of a vector
+				\item interp1 - 1D interpolation
+				\item isequal - check if objects are equal
+				\item max - finds maximum value in a vector
+				\item min - finds minimum value in a vector
+				\item norm - calculates norm/magnitude of a vector
+				\item parfor - for loop utilizing parallel computing toolbox
+				\item round - rounds number to integer
+				\item sgtitle - title setting for subplot
+			\end{itemize}
+			
+
+	\chapter{Code}
+	Only top files, core functions listed, all code is available on \href{https://github.com/kamilix2003/two-body}{Github repository}
+	
+	\lstinputlisting[language=matlab, caption={earth\_moon.m}]{../matlab/earth_moon.m}\label{code:1}
+	\lstinputlisting[language=matlab, caption={Results\_plots.m}]{../matlab/Results_plots.m}\label{code:results}
+	\lstinputlisting[language=matlab, caption={base\_ode.m}]{../matlab/base_ode.m}\label{code:2}
+	\lstinputlisting[language=matlab, caption={euler.m}]{../matlab/euler.m}\label{code:3}
+	\lstinputlisting[language=matlab, caption={RK4.m}]{../matlab/RK4.m}\label{code:4}
+	\lstinputlisting[language=matlab, caption={Adaptive\_RK.m}]{../matlab/Adaptive_RK.m}\label{code:5}
+	\lstinputlisting[language=matlab, caption={Adaptive\_RK.m}]{../matlab/comp_time.m}\label{code:6}
+	\lstinputlisting[language=matlab, caption={Adaptive\_RK.m}]{../matlab/err_test.m}\label{code:7}
 	
 \end{document}

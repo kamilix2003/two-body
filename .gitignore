@@ -1,6 +1,0 @@
-latex/-minted-documents
-latex/*.aux
-latex/*.log
-latex/*.out
-latex/*.gz
-latex/*.toc

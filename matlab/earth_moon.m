@@ -15,26 +15,15 @@ v2_0 = [0; velocity(2); velocity(1)];
 initial_conditions = [ v1_0, v2_0, r1_0, r2_0];
 
 period = 708.7 * 60 * 60;
-tspan = [0 period];
+tspan = [0 4*period];
 step_size = 1e5;
-max_err = 1e9;
-
-%% ODE 45
-[t, r] = ode45(@(t, r) base_ode(t, r, mass(1), mass(2), G), tspan(1):step_size:tspan(2), initial_conditions);
-figures1 = Results_plots(r, t);
+max_err = 1e8;
 
 %% Euler method
-r = euler(@base_ode, tspan, step_size, initial_conditions, mass(1), mass(2), G);
-figures2 = Results_plots(r, t);
+figures2 = Results_plots(@euler, mass, initial_conditions, tspan, step_size);
 
 %% RK4 method
-r = RK4(@base_ode, tspan, step_size, initial_conditions, mass(1), mass(2), G);
-figures3 = Results_plots(r, t);
+figures3 = Results_plots(@RK4, mass, initial_conditions, tspan, step_size);
 
 %% Adaptive RK4 method
-[t, r]= Adaptive_RK(@base_ode, tspan, max_err, initial_conditions, mass(1), mass(2), G);
-figures4 = Results_plots(r, t);
-
-%% Adaptive ODE45
-[t, r] = ode45(@(t, r) base_ode(t, r, mass(1), mass(2), G), tspan, initial_conditions, odeset('RelTol',max_err,'AbsTol',max_err));
-figures5 = Results_plots(r, t);
+figures4 = Results_plots(@Adaptive_RK, mass, initial_conditions, tspan, max_err);
